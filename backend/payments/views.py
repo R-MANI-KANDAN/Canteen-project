@@ -126,6 +126,13 @@ def create_order_api(request):
 
     order_ref = f"LCT-{created_orders[0]:04d}"
 
+    # Tag each order line with order_ref and grand_total for exact item resolution
+    for vi in validated_items:
+        Order.objects.filter(order_id__in=created_orders, product=vi['product']).update(
+            invoice_number=order_ref,
+            grand_total=vi['subtotal']
+        )
+
     # Create Razorpay order
     try:
         razorpay_order = create_razorpay_order(
@@ -146,7 +153,7 @@ def create_order_api(request):
             status=500
         )
 
-    # Create Payment record
+    # Create Payment record with explicit order IDs
     payment = Payment.objects.create(
         user=request.user,
         order_group=order_ref,
@@ -154,6 +161,7 @@ def create_order_api(request):
         amount_paise=int(total * 100),
         razorpay_order_id=razorpay_order['id'],
         status='created',
+        remarks=f"Orders: {','.join(map(str, created_orders))}",
     )
 
     return JsonResponse({
@@ -433,4 +441,4 @@ def retry_payment(request, order_ref):
 def _get_order_ids(payment):
     """Gets order IDs associated with a payment's order group."""
     from .services import _get_order_ids_from_group
-    return _get_order_ids_from_group(payment.order_group)
+    return _get_order_ids_from_group(payment.order_group, payment)

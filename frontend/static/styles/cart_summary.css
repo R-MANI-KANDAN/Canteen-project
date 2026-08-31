@@ -51,20 +51,6 @@
     }
     .summary-row { display: flex; justify-content: space-between; padding: .4rem 0; font-size: .9rem; }
     .summary-row.total { font-weight: 700; font-size: 1.05rem; border-top: 1px solid var(--border); margin-top: .5rem; padding-top: .75rem; }
-    .coupon-row { display: flex; gap: .5rem; margin-top: .75rem; }
-    .coupon-row input {
-      flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
-      border-radius: var(--radius-sm); color: var(--text); padding: .45rem .75rem;
-      font-family: inherit; font-size: .875rem; transition: border-color var(--transition);
-    }
-    .coupon-row input:focus { outline: none; border-color: var(--brand); background: rgba(249, 115, 22, 0.05); }
-    .coupon-row button {
-      background: rgba(255, 255, 255, 0.08); border: 1px solid var(--glass-border);
-      border-radius: var(--radius-sm); color: var(--text);
-      padding: .45rem .85rem; cursor: pointer; font-size: .875rem; font-weight: 500;
-      transition: all var(--transition);
-    }
-    .coupon-row button:hover { background: var(--brand); border-color: var(--brand); color: #fff; box-shadow: 0 2px 10px var(--brand-glow); }
 
     /* Slot & Type Cards */
     .section-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: .75rem; display: flex; align-items: center; gap: .4rem; }

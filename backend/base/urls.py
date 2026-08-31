@@ -18,7 +18,6 @@ urlpatterns = [
     path('ready-to-grab/',    views.ready_to_grab,   name='ready_to_grab'),
     path('cooked-to-serve/',  views.cooked_to_serve, name='cooked_to_serve'),
     path('beverages/',        views.beverages,        name='beverages'),
-    path('snacks/',           views.snacks,           name='snacks'),
     path('sidedish/',         views.sidedish,         name='sidedish'),
 
     # Contact

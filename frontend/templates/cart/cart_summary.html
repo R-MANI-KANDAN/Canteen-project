@@ -22,18 +22,15 @@
     <!-- Summary -->
     <div class="summary-box">
       <div class="summary-row"><span>Subtotal</span><span>₹<span id="subtotal">0</span></span></div>
-      <div class="summary-row"><span>Discount</span><span>-₹<span id="discount">0</span></span></div>
       <div class="summary-row total"><span>Total</span><span>₹<span id="total">0</span></span></div>
-      <div class="coupon-row">
-        <input type="text" id="coupon" placeholder="Coupon code (e.g. LICET5)">
-        <button onclick="applyCoupon()">Apply</button>
-      </div>
     </div>
 
     <!-- Date Selection -->
     <div class="section-card">
       <h3>📅 Pickup Date</h3>
-      <input type="date" id="order-date" class="date-input">
+      <div class="option-chips" id="date-chips">
+        <!-- Rendered by JS: Today, Tomorrow, Day After Tomorrow -->
+      </div>
     </div>
 
     <!-- Time Slot -->
@@ -92,7 +89,43 @@ const CSRF = getCsrfToken();
 let cartItems  = getCart();    // [{ id, name, price, img, qty }, …]
 let selectedTime = '12:45';
 let selectedType = 'Dine In';
-let discountAmount = 0;
+let selectedDate = '';
+
+// ── Date Helpers ─────────────────────────────────────────────────────────────
+function getISODate(daysOffset) {
+  const d = new Date();
+  d.setDate(d.getDate() + daysOffset);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getDisplayDateLabel(daysOffset) {
+  const d = new Date();
+  d.setDate(d.getDate() + daysOffset);
+  const options = { month: 'short', day: 'numeric' };
+  const formatted = d.toLocaleDateString('en-US', options);
+  if (daysOffset === 0) return `Today (${formatted})`;
+  if (daysOffset === 1) return `Tomorrow (${formatted})`;
+  if (daysOffset === 2) return `Day After Tomorrow (${formatted})`;
+  return formatted;
+}
+
+function initDateChips() {
+  const container = document.getElementById('date-chips');
+  if (!container) return;
+  const dates = [
+    { iso: getISODate(0), label: getDisplayDateLabel(0) },
+    { iso: getISODate(1), label: getDisplayDateLabel(1) },
+    { iso: getISODate(2), label: getDisplayDateLabel(2) },
+  ];
+  selectedDate = dates[0].iso;
+  container.innerHTML = dates.map((d, idx) => `
+    <div class="chip ${idx === 0 ? 'active' : ''}" data-value="${d.iso}">${d.label}</div>
+  `).join('');
+  initChips('date-chips', v => { selectedDate = v; });
+}
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderCart() {
@@ -144,22 +177,9 @@ function renderCart() {
     </table>`;
 
   panel.style.display = 'block';
-  applyDiscount(subtotal);
-  updateNavCartBadge();
-}
-
-function applyDiscount(subtotal) {
-  const code = document.getElementById('coupon')?.value?.trim().toUpperCase();
-  discountAmount = code === 'LICET5' ? Math.round(subtotal * 0.05) : 0;
-  const total = subtotal - discountAmount;
   document.getElementById('subtotal').textContent = subtotal;
-  document.getElementById('discount').textContent = discountAmount;
-  document.getElementById('total').textContent    = total;
-}
-
-function applyCoupon() {
-  const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
-  applyDiscount(subtotal);
+  document.getElementById('total').textContent    = subtotal;
+  updateNavCartBadge();
 }
 
 function changeQty(idx, delta) {
@@ -178,7 +198,9 @@ function removeItem(idx) {
 
 // ── Chips ─────────────────────────────────────────────────────────────────────
 function initChips(containerId, onSelect) {
-  document.getElementById(containerId).addEventListener('click', e => {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.addEventListener('click', e => {
     const chip = e.target.closest('.chip');
     if (!chip) return;
     document.querySelectorAll(`#${containerId} .chip`).forEach(c => c.classList.remove('active'));
@@ -194,12 +216,10 @@ function goToCheckout() {
     return;
   }
 
-  const date = document.getElementById('order-date').value;
-
   // Save pickup options to sessionStorage so checkout.js can read them
   sessionStorage.setItem('checkoutPickupTime', selectedTime);
   sessionStorage.setItem('checkoutOrderType', selectedType);
-  sessionStorage.setItem('checkoutDate', date);
+  sessionStorage.setItem('checkoutDate', selectedDate || getISODate(0));
 
   window.location.href = "{% url 'payment_checkout' %}";
 }
@@ -255,10 +275,7 @@ function finishOrder() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // default date = today
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('order-date').value = today;
-
+  initDateChips();
   initChips('time-chips', v => { selectedTime = v; });
   initChips('type-chips', v => { selectedType = v; });
 

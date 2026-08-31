@@ -154,14 +154,17 @@ def process_successful_payment(payment_obj, razorpay_data):
     # Generate invoice number for this payment
     invoice_number = generate_invoice_number()
 
-    # Update all Order rows belonging to this group
+    # Get exact order IDs for this payment
+    order_ids = _get_order_ids_from_group(payment_obj.order_group, payment_obj)
     orders = Order.objects.filter(
         customer=payment_obj.user,
-        order_id__in=_get_order_ids_from_group(payment_obj.order_group)
+        order_id__in=order_ids
     )
 
     for order in orders:
-        order.status = True  # Mark as confirmed/done is handled by kitchen later
+        order.status = True  # Mark as confirmed
+        order.payment_status = 'paid'
+        order.invoice_number = invoice_number
         order.save()
 
     # Generate QR code image
@@ -172,37 +175,68 @@ def process_successful_payment(payment_obj, razorpay_data):
         invoice_number=invoice_number,
     )
 
-    # Store invoice and QR info on the payment
-    payment_obj.remarks = f"Invoice: {invoice_number} | QR: {qr_path}"
+    # Store invoice, QR, and exact order IDs on the payment record
+    order_ids_str = ','.join(map(str, order_ids))
+    payment_obj.remarks = f"Invoice: {invoice_number} | QR: {qr_path} | Orders: {order_ids_str}"
     payment_obj.save()
 
-    logger.info(f"Payment {payment_obj.razorpay_payment_id} processed successfully. Invoice: {invoice_number}")
+    logger.info(f"Payment {payment_obj.razorpay_payment_id} processed successfully for orders [{order_ids_str}]. Invoice: {invoice_number}")
     return payment_obj
 
 
-def _get_order_ids_from_group(order_group):
+def _get_order_ids_from_group(order_group, payment_obj=None):
     """
-    Parses order IDs from an order group reference like 'LCT-0001'.
-    Returns the order IDs associated with this group.
+    Parses order IDs from an order group reference like 'LCT-0001' or Payment object.
+    Returns ONLY the order IDs associated with this exact checkout payment.
     """
     from base.models import Order
-    # The order_group is stored in Payment.order_group
-    # We need to find orders that were created as part of this checkout
-    # Since the group is like LCT-0001, we use the number part as the first order_id
+    from .models import Payment
+
+    if payment_obj is None:
+        try:
+            payment_obj = Payment.objects.get(order_group=order_group)
+        except (Payment.DoesNotExist, Payment.MultipleObjectsReturned):
+            payment_obj = None
+
+    # 1. Check if remarks contains explicit "Orders: 71,72"
+    if payment_obj and payment_obj.remarks and 'Orders:' in payment_obj.remarks:
+        try:
+            orders_part = payment_obj.remarks.split('Orders:')[1].strip()
+            if '|' in orders_part:
+                orders_part = orders_part.split('|')[0].strip()
+            ids = [int(x.strip()) for x in orders_part.split(',') if x.strip().isdigit()]
+            if ids:
+                return ids
+        except Exception:
+            pass
+
+    # 2. Check if Order rows have invoice_number matching order_group (e.g. 'LCT-0071')
+    matching_by_group = list(Order.objects.filter(invoice_number=order_group).values_list('order_id', flat=True))
+    if matching_by_group:
+        return matching_by_group
+
+    # 3. Fallback: Parse the starting order_id from 'LCT-0071' -> 71 and sum up to amount
     try:
-        order_num = int(order_group.replace('LCT-', ''))
-        # Find all orders created by the same user around the same time
-        # In the current model, each cart item creates a separate Order row
-        # They share the same date, pickup_time, and order_type
-        first_order = Order.objects.get(order_id=order_num)
-        related_orders = Order.objects.filter(
-            customer=first_order.customer,
-            date=first_order.date,
-            pickup_time=first_order.pickup_time,
-            order_type=first_order.order_type,
-        )
-        return list(related_orders.values_list('order_id', flat=True))
-    except (Order.DoesNotExist, ValueError):
+        start_id = int(order_group.replace('LCT-', ''))
+        if payment_obj:
+            candidate_orders = Order.objects.filter(
+                customer=payment_obj.user,
+                order_id__gte=start_id
+            ).order_by('order_id')
+
+            matched_ids = []
+            running_total = Decimal('0')
+            for o in candidate_orders:
+                sub = o.product.price * o.quantity
+                matched_ids.append(o.order_id)
+                running_total += sub
+                if running_total >= payment_obj.amount:
+                    break
+            if matched_ids and running_total == payment_obj.amount:
+                return matched_ids
+
+        return [start_id]
+    except Exception:
         return []
 
 

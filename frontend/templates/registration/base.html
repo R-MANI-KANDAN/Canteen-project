@@ -25,7 +25,6 @@
     <a href="{% url 'ready_to_grab' %}">Ready to Grab</a>
     <a href="{% url 'cooked_to_serve' %}">Cooked to Serve</a>
     <a href="{% url 'beverages' %}">Beverages</a>
-    <a href="{% url 'snacks' %}">Snacks</a>
     <a href="{% url 'sidedish' %}">Side Dish</a>
     <a href="{% url 'contact' %}">Contact</a>
     {% if user.is_staff %}<a href="{% url 'kitchen_dashboard' %}">🍳 Kitchen</a>{% endif %}
@@ -42,7 +41,7 @@
     {% if user.is_authenticated %}
     <div class="user-menu">
       <button class="user-avatar-btn" onclick="toggleDropdown()" id="userAvatarBtn">
-        <img src="{% static 'accounts/User-Logo.png' %}" alt="Avatar" id="topbar-avatar" onerror="this.style.display='none'">
+        <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'accounts/User-Logo.png' %}{% endif %}" alt="Avatar" id="topbar-avatar" onerror="this.style.display='none'">
         <span id="topbar-username">
           {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.email|truncatechars:20 }}{% endif %}
         </span>
@@ -72,15 +71,6 @@
 <!-- ── Page Content ───────────────────────────────────────────────────────── -->
 {% block content %}{% endblock %}
 
-<!-- ── Footer ────────────────────────────────────────────────────────────── -->
-<footer class="site-footer">
-  <p>&copy; 2025 LICET Cafeteria. All rights reserved.</p>
-  <div class="social-links">
-    <a href="#">Facebook</a>
-    <a href="#">Instagram</a>
-    <a href="#">Twitter</a>
-  </div>
-</footer>
 
 <!-- ── Profile Modal ─────────────────────────────────────────────────────── -->
 <div class="modal-overlay" id="profileModal" onclick="handleModalOverlayClick(event)">
@@ -92,7 +82,7 @@
     <div class="modal-body">
       <!-- Profile picture -->
       <div class="modal-pic-row">
-        <img src="{% static 'accounts/User-Logo.png' %}" alt="Profile" id="profilePicPreview">
+        <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'accounts/User-Logo.png' %}{% endif %}" alt="Profile" id="profilePicPreview">
         <div class="modal-pic-actions">
           <label class="btn-sm btn-primary" style="display:inline-block;cursor:pointer;">
             📷 Change Photo
@@ -112,26 +102,26 @@
         <label>Year of Study</label>
         <select id="modal-yearOfStudy">
           <option value="">-- Select --</option>
-          <option value="1st Year">1st Year</option>
-          <option value="2nd Year">2nd Year</option>
-          <option value="3rd Year">3rd Year</option>
-          <option value="4th Year">4th Year</option>
+          <option value="1st Year" {% if profile.year_of_study == '1st Year' %}selected{% endif %}>1st Year</option>
+          <option value="2nd Year" {% if profile.year_of_study == '2nd Year' %}selected{% endif %}>2nd Year</option>
+          <option value="3rd Year" {% if profile.year_of_study == '3rd Year' %}selected{% endif %}>3rd Year</option>
+          <option value="4th Year" {% if profile.year_of_study == '4th Year' %}selected{% endif %}>4th Year</option>
         </select>
       </div>
       <div class="form-group">
         <label>Batch</label>
-        <input type="text" id="modal-batch" value="" placeholder="e.g. 2021-2025">
+        <input type="text" id="modal-batch" value="{{ profile.batch|default:'' }}" placeholder="e.g. 2021-2025">
       </div>
       <div class="form-group">
         <label>Department</label>
         <select id="modal-department">
           <option value="">-- Select --</option>
-          <option value="CSE">CSE</option>
-          <option value="ECE">ECE</option>
-          <option value="IT">IT</option>
-          <option value="EEE">EEE</option>
-          <option value="MECH">MECH</option>
-          <option value="AIDS">AIDS</option>
+          <option value="CSE" {% if profile.department == 'CSE' %}selected{% endif %}>CSE</option>
+          <option value="ECE" {% if profile.department == 'ECE' %}selected{% endif %}>ECE</option>
+          <option value="IT" {% if profile.department == 'IT' %}selected{% endif %}>IT</option>
+          <option value="EEE" {% if profile.department == 'EEE' %}selected{% endif %}>EEE</option>
+          <option value="MECH" {% if profile.department == 'MECH' %}selected{% endif %}>MECH</option>
+          <option value="AIDS" {% if profile.department == 'AIDS' %}selected{% endif %}>AIDS</option>
         </select>
       </div>
 

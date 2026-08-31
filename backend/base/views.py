@@ -152,15 +152,6 @@ def beverages(request):
 
 
 @login_required
-def snacks(request):
-    products = (Product.objects
-                .filter(category__name__iexact='snacks', is_sale=True)
-                .select_related('category')
-                .order_by('sub_category', 'name'))
-    return render(request, 'registration/snacks.html', {'products': products})
-
-
-@login_required
 def sidedish(request):
     products = (Product.objects
                 .filter(category__name__iexact='side dishes', is_sale=True)

@@ -1,4 +1,5 @@
-// Description: Razorpay Checkout integration — reads cart, creates order via AJAX, opens Checkout popup, verifies payment.
+// Description: Razorpay Standard Checkout integration — following official Razorpay docs.
+// Ref: https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/integration-steps/
 
 (function () {
   'use strict';
@@ -27,7 +28,7 @@
   }
 
   function setPayBtnLoading(loading) {
-    const btn = document.getElementById('payNowBtn');
+    const btn = document.getElementById('rzp-button1');
     if (!btn) return;
     btn.disabled = loading;
     if (loading) {
@@ -43,7 +44,6 @@
     const tbody = document.getElementById('checkoutItemsBody');
     const subtotalEl = document.getElementById('checkoutSubtotal');
     const totalEl = document.getElementById('checkoutTotal');
-    const payLabelEl = document.getElementById('payAmountLabel');
 
     if (!tbody) return;
 
@@ -79,14 +79,70 @@
 
     if (subtotalEl) subtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
     if (totalEl)    totalEl.textContent    = `₹${subtotal.toFixed(2)}`;
-    if (payLabelEl) payLabelEl.textContent = `Pay ₹${subtotal.toFixed(2)}`;
+    updatePayButtonLabel(subtotal);
+  }
+
+  function updatePayButtonLabel(subtotal) {
+    const payLabelEl = document.getElementById('payAmountLabel');
+    if (!payLabelEl) return;
+    if (subtotal === undefined) {
+      const cart = getCart();
+      subtotal = cart.reduce((s, i) => s + parseFloat(i.price) * i.qty, 0);
+    }
+    payLabelEl.textContent = `₹${subtotal.toFixed(2)}`;
   }
 
   /* ── Checkout Chips ────────────────────────────────────────────────────── */
   let selectedTime = '';
   let selectedType = 'Dine In';
+  let selectedDate = '';
+
+  function getISODate(daysOffset) {
+    const d = new Date();
+    d.setDate(d.getDate() + daysOffset);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function getDisplayDateLabel(daysOffset) {
+    const d = new Date();
+    d.setDate(d.getDate() + daysOffset);
+    const options = { month: 'short', day: 'numeric' };
+    const formatted = d.toLocaleDateString('en-US', options);
+    if (daysOffset === 0) return `Today (${formatted})`;
+    if (daysOffset === 1) return `Tomorrow (${formatted})`;
+    if (daysOffset === 2) return `Day After Tomorrow (${formatted})`;
+    return formatted;
+  }
 
   function initChips() {
+    // Populate date chips
+    const dateContainer = document.getElementById('dateChips');
+    if (dateContainer) {
+      const savedDate = sessionStorage.getItem('checkoutDate') || getISODate(0);
+      selectedDate = savedDate;
+      const dates = [
+        { iso: getISODate(0), label: getDisplayDateLabel(0) },
+        { iso: getISODate(1), label: getDisplayDateLabel(1) },
+        { iso: getISODate(2), label: getDisplayDateLabel(2) },
+      ];
+      dateContainer.innerHTML = dates.map(d => `
+        <button type="button" class="checkout-chip ${d.iso === selectedDate ? 'active' : ''}" data-value="${d.iso}">
+          ${d.label}
+        </button>
+      `).join('');
+
+      dateContainer.querySelectorAll('.checkout-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          dateContainer.querySelectorAll('.checkout-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          selectedDate = chip.dataset.value;
+        });
+      });
+    }
+
     document.querySelectorAll('#timeChips .checkout-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         document.querySelectorAll('#timeChips .checkout-chip').forEach(c => c.classList.remove('active'));
@@ -128,7 +184,7 @@
     if (activeTime && !selectedTime) selectedTime = activeTime.dataset.value;
   }
 
-  /* ── Razorpay Flow ─────────────────────────────────────────────────────── */
+  /* ── Step 1: Create Order on Server (Razorpay Docs §1.1) ────────────── */
   function initiatePayment() {
     const cart = getCart();
     if (!cart.length) {
@@ -136,8 +192,7 @@
       return;
     }
 
-    const dateEl = document.getElementById('checkoutDate');
-    const date = dateEl ? dateEl.value : new Date().toISOString().split('T')[0];
+    const date = selectedDate || getISODate(0);
 
     setPayBtnLoading(true);
 
@@ -154,9 +209,9 @@
       total: cart.reduce((s, i) => s + parseFloat(i.price) * i.qty, 0),
     };
 
-    console.log('[Checkout] Creating order with payload:', payload);
+    console.log('[Checkout] Step 1: Creating order on server with payload:', payload);
 
-    // Step 1: Create Razorpay order on backend
+    // Server-side API call to create Razorpay order
     fetch('/payments/create-order/', {
       method: 'POST',
       headers: {
@@ -176,6 +231,7 @@
           setPayBtnLoading(false);
           return;
         }
+        // Step 2: Open Razorpay Checkout with the order_id from Step 1
         openRazorpayCheckout(data);
       })
       .catch(err => {
@@ -185,15 +241,16 @@
       });
   }
 
+  /* ── Step 2: Integrate with Checkout on Client-Side (Razorpay Docs §1.2) */
   function openRazorpayCheckout(orderData) {
-    console.log('[Checkout] Opening Razorpay popup with:', {
+    console.log('[Checkout] Step 2: Opening Razorpay Checkout with:', {
       key: orderData.key_id,
       amount: orderData.amount,
       order_id: orderData.order_id,
       order_ref: orderData.order_ref,
     });
 
-    // Build prefill dynamically to avoid passing empty or invalid strings (which causes 400 Bad Request)
+    // Build prefill (Razorpay Docs §1.2.3 - prefill object)
     const prefill = {};
     if (window.CHECKOUT_USER_NAME && window.CHECKOUT_USER_NAME.trim() !== '') {
       prefill.name = window.CHECKOUT_USER_NAME.trim();
@@ -202,43 +259,66 @@
       prefill.email = window.CHECKOUT_USER_EMAIL.trim();
     }
 
-    // Razorpay options
-    const options = {
-      key: orderData.key_id,
-      amount: orderData.amount,           // in paise
-      currency: orderData.currency || 'INR',
-      name: 'LICET Cafeteria',
-      description: `Order ${orderData.order_ref}`,
-      order_id: orderData.order_id,       // Razorpay order_id
-      prefill: prefill,
-      theme: {
-        color: '#f97316',
-      },
-      modal: {
-        ondismiss: function () {
-          console.log('[Checkout] Razorpay popup dismissed by user');
-          showToast('Payment cancelled. You can retry any time.', 'info');
-          setPayBtnLoading(false);
-        },
-        escape: true,
-        backdropclose: false,
-      },
-      handler: function (response) {
-        // Step 2: Verify payment signature on backend
-        console.log('[Checkout] Payment handler called — SUCCESS from Razorpay:', response);
+    // Razorpay Checkout Options — following official docs exactly (§1.2.2 Handler Function code)
+    var options = {
+      "key": window.RAZORPAY_KEY_ID || orderData.key_id,  // Key ID generated from the Dashboard
+      "amount": String(orderData.amount),             // Amount in currency subunits (paise)
+      "currency": orderData.currency || "INR",
+      "name": "LICET Cafeteria",                      // Business name
+      "description": "Order " + orderData.order_ref,
+      "order_id": orderData.order_id,                 // order_id from Step 1
+      "handler": function (response) {
+        // §1.3 Handle Payment Success — handler receives razorpay_payment_id, razorpay_order_id, razorpay_signature
+        console.log('[Checkout] Step 3: Payment SUCCESS handler called:', {
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature ? response.razorpay_signature.substring(0, 20) + '...' : 'none',
+        });
+        // §1.4 Store fields & §1.5 Verify signature on server
         verifyPayment(response, orderData.order_ref, orderData.payment_uuid);
       },
+      "prefill": prefill,
+      "notes": {
+        "order_ref": orderData.order_ref
+      },
+      "theme": {
+        "color": "#f97316"
+      },
+      "modal": {
+        "confirm_close": true,        // Show confirmation dialog if user tries to close
+        "backdropclose": false,       // Don't close on backdrop click
+        "escape": true,               // Allow Esc key (default per docs)
+        "ondismiss": function () {
+          // Track modal dismissal
+          console.log('[Checkout] Razorpay modal dismissed by user');
+          showToast('Payment window closed. Click Pay Now to retry.', 'info');
+          setPayBtnLoading(false);
+        }
+      },
+      "retry": {
+        "enabled": true               // Allow retry on the checkout itself
+      }
     };
 
-    const rzp = new window.Razorpay(options);
+    // Create Razorpay instance
+    var rzp1 = new Razorpay(options);
 
-    rzp.on('payment.failed', function (response) {
-      console.error('[Checkout] payment.failed event:', JSON.stringify(response.error, null, 2));
+    // §1.3 Handle Payment Failure — payment.failed event
+    rzp1.on('payment.failed', function (response) {
+      console.error('[Checkout] payment.failed event:', {
+        code: response.error.code,
+        description: response.error.description,
+        source: response.error.source,
+        step: response.error.step,
+        reason: response.error.reason,
+        order_id: response.error.metadata.order_id,
+        payment_id: response.error.metadata.payment_id,
+      });
+
       setPayBtnLoading(false);
-      const errMsg = response.error?.description || 'Payment failed.';
-      showToast(errMsg, 'error');
+      showToast(response.error.description || 'Payment failed. Please retry.', 'error');
 
-      // Record failure to server
+      // Record failure on server (fire-and-forget, don't redirect)
       fetch('/payments/record-failure/', {
         method: 'POST',
         headers: {
@@ -247,24 +327,24 @@
         },
         body: JSON.stringify({
           razorpay_order_id: orderData.order_id,
-          error_description: errMsg,
+          error_description: response.error.description || 'Payment failed',
+          error_code: response.error.code,
+          error_reason: response.error.reason,
         }),
-      })
-        .finally(() => {
-          setTimeout(() => {
-            window.location.href = `/payments/failed/${orderData.order_ref}/`;
-          }, 1500);
-        });
+      }).catch(function (e) {
+        console.warn('[Checkout] Could not record failure:', e);
+      });
     });
 
-    rzp.open();
+    // Open the Razorpay Checkout modal
+    rzp1.open();
   }
 
+  /* ── Step 3-5: Verify Payment on Server (Razorpay Docs §1.4, §1.5) ──── */
   function verifyPayment(response, orderRef, paymentUuid) {
-    console.log('[Checkout] Verifying payment:', {
+    console.log('[Checkout] Step 4-5: Sending to server for signature verification:', {
       razorpay_payment_id: response.razorpay_payment_id,
       razorpay_order_id: response.razorpay_order_id,
-      razorpay_signature: response.razorpay_signature?.substring(0, 20) + '...',
       order_ref: orderRef,
     });
 
@@ -282,31 +362,31 @@
         payment_uuid: paymentUuid,
       }),
     })
-      .then(r => {
+      .then(function (r) {
         console.log('[Checkout] Verify response status:', r.status);
         return r.json();
       })
-      .then(data => {
+      .then(function (data) {
         console.log('[Checkout] Verify response data:', data);
         if (data.status === 'success') {
-          // Clear cart only after server confirms
+          // §1.6 Payment captured — clear cart and redirect
           localStorage.setItem('cartItems', '[]');
           sessionStorage.removeItem('checkoutPickupTime');
           sessionStorage.removeItem('checkoutOrderType');
           // Update nav badge
-          const badge = document.getElementById('nav-cart-badge');
+          var badge = document.getElementById('nav-cart-badge');
           if (badge) badge.textContent = '0';
-          window.location.href = data.redirect_url || `/payments/success/${orderRef}/`;
+          window.location.href = data.redirect_url || '/payments/success/' + orderRef + '/';
         } else {
-          console.error('[Checkout] Verification failed:', data);
+          console.error('[Checkout] Server-side verification failed:', data);
           showToast(data.message || 'Verification failed. Contact support.', 'error');
           setPayBtnLoading(false);
-          setTimeout(() => {
-            window.location.href = `/payments/failed/${orderRef}/`;
+          setTimeout(function () {
+            window.location.href = '/payments/failed/' + orderRef + '/';
           }, 2500);
         }
       })
-      .catch(err => {
+      .catch(function (err) {
         console.error('[Checkout] Verify fetch error:', err);
         showToast('Verification network error. Please contact support.', 'error');
         setPayBtnLoading(false);
@@ -315,26 +395,26 @@
 
   /* ── Retry Payment (on failed page) ───────────────────────────────────── */
   window.retryPayment = function (orderRef) {
-    const btn = document.getElementById('retryBtn');
+    var btn = document.getElementById('retryBtn');
     if (btn) {
       btn.disabled = true;
       btn.classList.add('loading');
     }
 
-    fetch(`/payments/retry/${orderRef}/`, {
+    fetch('/payments/retry/' + orderRef + '/', {
       method: 'POST',
       headers: { 'X-CSRFToken': getCsrf() },
     })
-      .then(r => r.json())
-      .then(data => {
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
         if (data.status !== 'success') {
           alert(data.message || 'Could not retry payment.');
           if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
           return;
         }
 
-        // Build prefill dynamically to avoid passing empty or invalid strings (which causes 400 Bad Request)
-        const prefill = {};
+        // Build prefill
+        var prefill = {};
         if (window.CHECKOUT_USER_NAME && window.CHECKOUT_USER_NAME.trim() !== '') {
           prefill.name = window.CHECKOUT_USER_NAME.trim();
         }
@@ -342,30 +422,37 @@
           prefill.email = window.CHECKOUT_USER_EMAIL.trim();
         }
 
-        const options = {
-          key: data.key_id,
-          amount: data.amount,
-          currency: data.currency || 'INR',
-          name: 'LICET Cafeteria',
-          description: `Retry - Order ${data.order_ref}`, // Changed em-dash to standard ASCII hyphen
-          order_id: data.order_id,
-          prefill: prefill,
-          theme: { color: '#f97316' },
-          modal: {
-            ondismiss: function () {
-              if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
-            },
-          },
-          handler: function (response) {
+        // Razorpay options per official docs
+        var options = {
+          "key": data.key_id,
+          "amount": String(data.amount),
+          "currency": data.currency || "INR",
+          "name": "LICET Cafeteria",
+          "description": "Retry - Order " + data.order_ref,
+          "order_id": data.order_id,
+          "handler": function (response) {
             verifyPayment(response, data.order_ref, null);
           },
+          "prefill": prefill,
+          "theme": { "color": "#f97316" },
+          "modal": {
+            "confirm_close": true,
+            "backdropclose": false,
+            "ondismiss": function () {
+              if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
+            }
+          },
+          "retry": {
+            "enabled": true
+          }
         };
-        const rzp = new window.Razorpay(options);
-        rzp.on('payment.failed', function (response) {
-          console.error('[Checkout] retry payment.failed event:', JSON.stringify(response.error, null, 2));
+
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response) {
+          console.error('[Checkout] Retry payment.failed:', response.error);
           if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
-          const errMsg = response.error?.description || 'Payment failed.';
-          
+          showToast(response.error.description || 'Payment failed.', 'error');
+
           fetch('/payments/record-failure/', {
             method: 'POST',
             headers: {
@@ -374,37 +461,29 @@
             },
             body: JSON.stringify({
               razorpay_order_id: data.order_id,
-              error_description: errMsg,
+              error_description: response.error.description || 'Payment failed',
             }),
-          }).finally(() => {
-            setTimeout(() => {
-              window.location.href = `/payments/failed/${data.order_ref}/`;
-            }, 1500);
-          });
+          }).catch(function (e) { console.warn('Could not record failure:', e); });
         });
-        rzp.open();
+
+        rzp1.open();
       })
-      .catch(() => {
+      .catch(function () {
         alert('Network error. Please try again.');
         if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
       });
   };
 
-  /* ── Init ──────────────────────────────────────────────────────────────── */
+  /* ── Init (per official Razorpay docs: attach onclick to rzp-button1) ── */
   document.addEventListener('DOMContentLoaded', function () {
-    // Set today's date on checkout date picker
-    const dateEl = document.getElementById('checkoutDate');
-    if (dateEl && !dateEl.value) {
-      dateEl.value = new Date().toISOString().split('T')[0];
-    }
-
     renderCheckoutSummary();
     initChips();
 
-    // Attach pay button
-    const payBtn = document.getElementById('payNowBtn');
-    if (payBtn) {
-      payBtn.addEventListener('click', initiatePayment);
-    }
+    // Attach pay button — matches official Razorpay pattern:
+    // document.getElementById('rzp-button1').onclick = function(e){ rzp1.open(); e.preventDefault(); }
+    document.getElementById('rzp-button1').onclick = function (e) {
+      e.preventDefault();
+      initiatePayment();
+    };
   });
 })();

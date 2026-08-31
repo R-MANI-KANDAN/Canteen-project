@@ -1,4 +1,4 @@
-<!-- Description: Razorpay-powered checkout page showing order summary, pickup options, and Pay Now button. -->
+<!-- Description: Razorpay-powered checkout page — follows official Razorpay Standard Checkout integration pattern. -->
 {% extends "registration/base.html" %}
 {% load static %}
 
@@ -61,7 +61,7 @@
             </tr>
           </thead>
           <tbody id="checkoutItemsBody">
-            <!-- Populated by checkout.js from localStorage -->
+            <!-- Populated by JS from localStorage -->
           </tbody>
         </table>
         <div class="pricing-section">
@@ -84,7 +84,9 @@
           <!-- Pickup Date -->
           <div class="option-section">
             <h4>📅 Date</h4>
-            <input type="date" id="checkoutDate" class="checkout-date-input">
+            <div class="checkout-chips" id="dateChips">
+              <!-- Populated dynamically by JS: Today, Tomorrow, Day After Tomorrow -->
+            </div>
           </div>
 
           <!-- Time Slot -->
@@ -125,9 +127,9 @@
         </div>
         {% endif %}
 
-        <!-- Pay Button -->
-        <div class="pay-btn-container">
-          <button class="pay-btn" id="payNowBtn">
+        <!-- Pay Button (rzp-button1 per official Razorpay docs) -->
+        <div class="pay-btn-container" style="margin-top: 1rem;">
+          <button class="pay-btn" id="rzp-button1">
             <span class="btn-label">
               <span>💳 Pay</span>
               <span id="payAmountLabel">Now</span>
@@ -148,7 +150,7 @@
 
         <!-- Accepted methods -->
         <div style="margin-top:1rem;text-align:center;font-size:.75rem;color:var(--text-muted);">
-          Accepts UPI · Cards · Net Banking · Wallets
+          Accepts Debit & Credit Cards · Net Banking · Wallets
         </div>
       </div>
     </div>
@@ -158,17 +160,17 @@
 
 <!-- Toast notification -->
 <div class="toast" id="checkoutToast"></div>
-
-<!-- Inject user info for prefill -->
-<script>
-  window.CHECKOUT_USER_NAME  = "{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}";
-  window.CHECKOUT_USER_EMAIL = "{{ user.email }}";
-</script>
 {% endblock %}
 
 {% block extra_js %}
-<!-- Razorpay Checkout SDK -->
+<!-- Razorpay Checkout SDK (must load before our script, per official docs) -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<!-- Our integration -->
+<!-- Inject user info for Razorpay prefill -->
+<script>
+  window.CHECKOUT_USER_NAME  = "{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}";
+  window.CHECKOUT_USER_EMAIL = "{{ user.email }}";
+  window.RAZORPAY_KEY_ID     = "{{ razorpay_key_id }}";
+</script>
+<!-- Our checkout integration (matches official Razorpay handler function pattern) -->
 <script src="{% static 'js/checkout.js' %}"></script>
 {% endblock %}

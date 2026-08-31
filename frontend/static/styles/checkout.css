@@ -358,6 +358,98 @@
   50% { transform: translateY(-8px); }
 }
 
+/* ── Payment Method Options ───────────────────────── */
+.payment-methods-section {
+  margin-top: 1rem;
+  margin-bottom: 1.25rem;
+}
+.payment-methods-section h4 {
+  font-size: .88rem;
+  font-weight: 600;
+  margin-bottom: .65rem;
+  color: var(--text);
+}
+.payment-method-grid {
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+}
+.pm-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem .9rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .25s ease;
+  user-select: none;
+}
+.pm-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(249, 115, 22, 0.35);
+  transform: translateY(-1px);
+}
+.pm-card.active {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: var(--brand);
+  box-shadow: 0 0 14px var(--brand-glow);
+}
+.pm-left {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.pm-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pm-info {
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+}
+.pm-name {
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.pm-desc {
+  font-size: .72rem;
+  color: var(--text-muted);
+}
+.pm-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s ease;
+  flex-shrink: 0;
+}
+.pm-radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  transition: all .2s ease;
+}
+.pm-card.active .pm-radio {
+  border-color: var(--brand);
+}
+.pm-card.active .pm-radio-dot {
+  background: var(--brand);
+}
+
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
   .checkout-grid {

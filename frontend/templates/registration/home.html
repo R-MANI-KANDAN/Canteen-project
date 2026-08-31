@@ -32,7 +32,6 @@
     <a href="{% url 'ready_to_grab' %}"><i class="fas fa-box-open" style="margin-right:10px;"></i>Ready to Grab</a>
     <a href="{% url 'cooked_to_serve' %}"><i class="fas fa-fire" style="margin-right:10px;"></i>Cooked to Serve</a>
     <a href="{% url 'beverages' %}"><i class="fas fa-coffee" style="margin-right:10px;"></i>Beverages</a>
-    <a href="{% url 'snacks' %}"><i class="fas fa-cookie-bite" style="margin-right:10px;"></i>Snacks</a>
     <a href="{% url 'sidedish' %}"><i class="fas fa-drumstick-bite" style="margin-right:10px;"></i>Side Dishes</a>
     <a href="{% url 'cart_summary' %}"><i class="fas fa-shopping-cart" style="margin-right:10px;"></i>Cart</a>
     <a href="{% url 'contact' %}"><i class="fas fa-envelope" style="margin-right:10px;"></i>Contact</a>
@@ -81,18 +80,6 @@
         <a href="{% url 'beverages' %}"><img src="/media/uploads/product/cavins-milkshake.jpg" alt="Milkshake" loading="lazy"></a>
       </div>
       <a href="{% url 'beverages' %}" class="button beverages-btn">Order Now →</a>
-    </section>
-
-    <!-- Snacks Section -->
-    <section class="section snacks">
-      <h2>🍿 Snacks</h2>
-      <p>Enjoy quick bites and snacks.</p>
-      <div class="items">
-        <a href="{% url 'snacks' %}"><img src="/media/uploads/product/samosa.jpg" alt="Samosa" loading="lazy"></a>
-        <a href="{% url 'snacks' %}"><img src="/media/uploads/product/Egg_Podi_Mass.jpg" alt="Egg Podi Mass" loading="lazy"></a>
-        <a href="{% url 'snacks' %}"><img src="/media/uploads/product/french-fries.jpg" alt="French Fries" loading="lazy"></a>
-      </div>
-      <a href="{% url 'snacks' %}" class="button snacks-btn">Order Now →</a>
     </section>
 
     <!-- Side Dishes Section -->
@@ -151,7 +138,7 @@
         <!-- Profile Picture Section -->
         <div class="profile-pic-section">
           <div class="profile-pic-container">
-            <img id="profilePicPreview" src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}/media/profile_pics/default.jpg{% endif %}" alt="Profile Picture" class="profile-pic-preview">
+            <img id="profilePicPreview" src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'accounts/User-Logo.png' %}{% endif %}" alt="Profile Picture" class="profile-pic-preview">
             <div class="profile-pic-overlay" onclick="document.getElementById('profilePicInput').click()">
               <i class="fas fa-camera"></i>
             </div>
@@ -169,54 +156,45 @@
         
         <div class="form-group">
           <label for="fullName">Full Name</label>
-          <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
+          <input type="text" id="fullName" name="fullName" placeholder="Enter your full name"
+                 value="{% if user.get_full_name %}{{ user.get_full_name }}{% endif %}">
         </div>
         
         <div class="form-group">
           <label for="yearOfStudy">Year of Study</label>
           <select id="yearOfStudy" name="yearOfStudy">
             <option value="">Select Year</option>
-            <option value="1st Year">1st Year</option>
-            <option value="2nd Year">2nd Year</option>
-            <option value="3rd Year">3rd Year</option>
-            <option value="4th Year">4th Year</option>
+            <option value="1st Year" {% if profile.year_of_study == '1st Year' %}selected{% endif %}>1st Year</option>
+            <option value="2nd Year" {% if profile.year_of_study == '2nd Year' %}selected{% endif %}>2nd Year</option>
+            <option value="3rd Year" {% if profile.year_of_study == '3rd Year' %}selected{% endif %}>3rd Year</option>
+            <option value="4th Year" {% if profile.year_of_study == '4th Year' %}selected{% endif %}>4th Year</option>
           </select>
         </div>
         
         <div class="form-group">
           <label for="batch">Batch</label>
-          <input type="text" id="batch" name="batch" placeholder="e.g., 2021-2025">
+          <input type="text" id="batch" name="batch" placeholder="e.g., 2021-2025"
+                 value="{{ profile.batch|default:'' }}">
         </div>
         
         <div class="form-group">
           <label for="department">Department</label>
           <select id="department" name="department">
             <option value="">Select Department</option>
-            <option value="CSE">CSE</option>
-            <option value="ECE">ECE</option>
-            <option value="IT">IT</option>
-            <option value="EEE">EEE</option>
-            <option value="MECH">MECH</option>
-            <option value="AIDS">AIDS</option>
+            <option value="CSE" {% if profile.department == 'CSE' %}selected{% endif %}>CSE</option>
+            <option value="ECE" {% if profile.department == 'ECE' %}selected{% endif %}>ECE</option>
+            <option value="IT" {% if profile.department == 'IT' %}selected{% endif %}>IT</option>
+            <option value="EEE" {% if profile.department == 'EEE' %}selected{% endif %}>EEE</option>
+            <option value="MECH" {% if profile.department == 'MECH' %}selected{% endif %}>MECH</option>
+            <option value="AIDS" {% if profile.department == 'AIDS' %}selected{% endif %}>AIDS</option>
           </select>
         </div>
         
-
-        
-        <button type="button" class="save-btn" onclick="saveProfile()">Save Changes</button>
+        <button type="button" class="save-btn" id="saveProfileBtn" onclick="saveProfile()">Save Changes</button>
       </form>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>&copy; 2025 LICET Cafeteria. All rights reserved.</p>
-    <div class="social-links">
-      <a href="#" aria-label="Facebook"><i class="fab fa-facebook fa-lg" style="color:white; margin: 0 10px;"></i></a>
-      <a href="#" aria-label="Instagram"><i class="fab fa-instagram fa-lg" style="color:white; margin: 0 10px;"></i></a>
-      <a href="#" aria-label="Twitter"><i class="fab fa-twitter fa-lg" style="color:white; margin: 0 10px;"></i></a>
-    </div>
-  </footer>
 
   <!-- JavaScript -->
   <script>
@@ -236,8 +214,7 @@
     document.addEventListener('click', function(event) {
       const userSection = document.querySelector('.user-section');
       const dropdown = document.getElementById('dropdownMenu');
-      
-      if (!userSection.contains(event.target)) {
+      if (userSection && !userSection.contains(event.target)) {
         dropdown.classList.remove('active');
       }
     });
@@ -246,116 +223,82 @@
     function openProfileModal() {
       document.getElementById('profileModal').style.display = 'block';
       document.getElementById('dropdownMenu').classList.remove('active');
-      
-      // Load existing data if available
-      loadProfileData();
     }
 
     function closeProfileModal() {
       document.getElementById('profileModal').style.display = 'none';
     }
 
-    function loadProfileData() {
-  const userData = JSON.parse(localStorage.getItem('userData')) || {};
-
-  document.getElementById('fullName').value = userData.fullName || '';
-  document.getElementById('yearOfStudy').value = userData.yearOfStudy || '';
-  document.getElementById('batch').value = userData.batch || '';
-  document.getElementById('department').value = userData.department || '';
-
-  // Load profile picture
-  if (userData.profilePic) {
-    document.getElementById('profilePicPreview').src = userData.profilePic;
-    document.querySelector('.user-button img').src = userData.profilePic;
-  }
-
-  if (userData.fullName) {
-    document.getElementById('userName').textContent = userData.fullName;
-  }
-}
-
+    // Profile picture handling
+    let tempProfilePicFile = null;
 
     function handleProfilePicChange(event) {
       const file = event.target.files[0];
-      if (file) {
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-          alert('Please select a valid image file.');
-          return;
-        }
-        
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          alert('Please select an image smaller than 5MB.');
-          return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const imageDataUrl = e.target.result;
-          document.getElementById('profilePicPreview').src = imageDataUrl;
-          
-          // Store the image data temporarily
-          window.tempProfilePic = imageDataUrl;
-        };
-        reader.readAsDataURL(file);
-      }
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { alert('Please select a valid image file.'); return; }
+      if (file.size > 5 * 1024 * 1024) { alert('Please select an image smaller than 5MB.'); return; }
+
+      tempProfilePicFile = file;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('profilePicPreview').src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     function removeProfilePic() {
-      // Reset to default profile picture
-      const defaultPic = 'Images/Landing Page/User-Logo.png';
-      document.getElementById('profilePicPreview').src = defaultPic;
+      document.getElementById('profilePicPreview').src = "{% static 'accounts/User-Logo.png' %}";
       document.getElementById('profilePicInput').value = '';
-      window.tempProfilePic = null;
+      tempProfilePicFile = null;
     }
 
+    // ── CSRF helper ──
+    function getCsrfToken() {
+      const cookies = document.cookie.split(';');
+      for (const c of cookies) {
+        const [k, v] = c.trim().split('=');
+        if (k === 'csrftoken') return v;
+      }
+      return '';
+    }
+
+    // ── Save profile via AJAX to Django backend ──
     function saveProfile() {
-      const formData = {
-        fullName: document.getElementById('fullName').value,
-        yearOfStudy: document.getElementById('yearOfStudy').value,
-        batch: document.getElementById('batch').value,
-        department: document.getElementById('department').value,
-        profilePic: window.tempProfilePic || window.userData?.profilePic || 'Images/Landing Page/User-Logo.png'
-      };
+      const btn = document.getElementById('saveProfileBtn');
+      btn.textContent = 'Saving…'; btn.disabled = true;
 
-      // Save to memory (LocalStorage)
-      localStorage.setItem('userData', JSON.stringify(formData));
+      const fd = new FormData();
+      fd.append('fullName',    document.getElementById('fullName').value);
+      fd.append('yearOfStudy', document.getElementById('yearOfStudy').value);
+      fd.append('batch',       document.getElementById('batch').value);
+      fd.append('department',  document.getElementById('department').value);
+      if (tempProfilePicFile) fd.append('profilePic', tempProfilePicFile);
 
-      
-      // Update the display name
-      if (formData.fullName) {
-        document.getElementById('userName').textContent = formData.fullName;
-      }
-
-      // Update the user button profile picture
-      if (formData.profilePic) {
-        document.querySelector('.user-button img').src = formData.profilePic;
-      }
-
-      // Clear temporary profile pic data
-      window.tempProfilePic = null;
-
-      // Show success message
-      alert('Profile updated successfully!');
-      closeProfileModal();
-    }
-
-    function logout() {
-      const confirmLogout = confirm('Are you sure you want to logout?');
-      if (confirmLogout) {
-        // Clear user data
-        window.userData = {};
-        window.tempProfilePic = null;
-        
-        // In a real app, you would redirect to login page
-        alert('You have been logged out successfully!');
-        
-        // Reset display
-        document.getElementById('userName').textContent = 'User Name';
-        document.querySelector('.user-button img').src = 'Images/Landing Page/User-Logo.png';
-        document.getElementById('dropdownMenu').classList.remove('active');
-      }
+      fetch("{% url 'update_profile_ajax' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCsrfToken() },
+        body: fd,
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'success') {
+          // Update the display name in the topbar
+          if (data.fullName) {
+            document.getElementById('userName').textContent = data.fullName;
+          }
+          // Update the profile picture in the topbar
+          if (data.profilePicUrl) {
+            document.querySelector('.user-button img').src = data.profilePicUrl;
+          }
+          tempProfilePicFile = null;
+          alert('Profile updated successfully!');
+          closeProfileModal();
+        } else {
+          alert('Error saving profile.');
+        }
+      })
+      .catch(() => alert('Network error.'))
+      .finally(() => { btn.textContent = 'Save Changes'; btn.disabled = false; });
     }
 
     // Close modal when clicking outside of it
@@ -365,13 +308,6 @@
         closeProfileModal();
       }
     }
-
-    // Initialize user data storage
-    window.userData = window.userData || {};
-    document.addEventListener('DOMContentLoaded', () => {
-  loadProfileData();
-});
-
   </script>
 </body>
 </html>

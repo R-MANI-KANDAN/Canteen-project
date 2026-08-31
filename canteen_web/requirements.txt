@@ -1,8 +1,0 @@
-Django>=5.0
-pillow
-django-extensions
-python-decouple
-djangorestframework
-django-allauth
-whitenoise
-gunicorn
