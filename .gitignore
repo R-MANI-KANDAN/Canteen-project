@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables & secrets (keep secrets safe)
+.env
+backend/.env
+*.env
+
+# Local SQLite databases
+*.sqlite3
+backend/db.sqlite3
+
+# Collected static files
+staticfiles/
+backend/staticfiles/
+
+# Uploaded local media (keep directory, ignore generated assets)
+backend/media/qr_codes/qr_*.png
+
+# IDE and OS metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
