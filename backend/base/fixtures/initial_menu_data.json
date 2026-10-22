@@ -1,0 +1,667 @@
+[
+{
+  "model": "base.category",
+  "pk": 1,
+  "fields": {
+    "name": "cook to serve"
+  }
+},
+{
+  "model": "base.category",
+  "pk": 2,
+  "fields": {
+    "name": "ready to grab"
+  }
+},
+{
+  "model": "base.category",
+  "pk": 3,
+  "fields": {
+    "name": "beverages"
+  }
+},
+{
+  "model": "base.category",
+  "pk": 5,
+  "fields": {
+    "name": "side dishes"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 1,
+  "fields": {
+    "name": "VEG FRIED RICE",
+    "price": "80.00",
+    "category": 1,
+    "image": "uploads/product/Veg_Fried_Rice.jpg",
+    "code_no": 16,
+    "is_sale": true,
+    "sub_category": "veg lunch"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 2,
+  "fields": {
+    "name": "VEG NOODLES",
+    "price": "80.00",
+    "category": 1,
+    "image": "uploads/product/Veg_Noodles.jpg",
+    "code_no": 17,
+    "is_sale": true,
+    "sub_category": "VEG NOODLES"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 3,
+  "fields": {
+    "name": "PANEER FRIED RICE",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Paneer_Fried_Rice.jpg",
+    "code_no": 18,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 4,
+  "fields": {
+    "name": "PANNER NOODLES",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Paneer_Noodles.jpg",
+    "code_no": 19,
+    "is_sale": true,
+    "sub_category": "VEG NOODLES"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 5,
+  "fields": {
+    "name": "GOBI FRIED RICE",
+    "price": "80.00",
+    "category": 1,
+    "image": "uploads/product/Gobi_Fried_Rice.jpg",
+    "code_no": 20,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 6,
+  "fields": {
+    "name": "GOBI NOODLES",
+    "price": "80.00",
+    "category": 1,
+    "image": "uploads/product/Gobi_Noodles.jpg",
+    "code_no": 21,
+    "is_sale": true,
+    "sub_category": "VEG NOODLES"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 7,
+  "fields": {
+    "name": "VEG SCHEZWAN FRIED RICE",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Veg_Schezwan_Fried_Rice.jpg",
+    "code_no": 83,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 8,
+  "fields": {
+    "name": "VEG SCHEZWAN NOODLES",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Veg_Schezwan_Noodles.jpg",
+    "code_no": 84,
+    "is_sale": true,
+    "sub_category": "VEG NOODLES"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 9,
+  "fields": {
+    "name": "MUSHROOM FRIED RICE",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Mushroom_Fried_Rice.jpg",
+    "code_no": 102,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 10,
+  "fields": {
+    "name": "MUSHROOM SCHEZWAN FRIED RICE",
+    "price": "100.00",
+    "category": 1,
+    "image": "uploads/product/Mushroom_Schezwan_Veg_Rice.jpg",
+    "code_no": 103,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 11,
+  "fields": {
+    "name": "MUSHROOM NOODLES",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Mushroom_Noodles.jpg",
+    "code_no": 104,
+    "is_sale": true,
+    "sub_category": "VEG NOODLES"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 12,
+  "fields": {
+    "name": "MUSHROOM SCHEZWAN NOODLES",
+    "price": "100.00",
+    "category": 1,
+    "image": "uploads/product/Mushroom_schezwan_Noodles.jpg",
+    "code_no": 104,
+    "is_sale": true,
+    "sub_category": "VEG NOODLES"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 13,
+  "fields": {
+    "name": "PANNER - 65",
+    "price": "90.00",
+    "category": 5,
+    "image": "uploads/product/panner65.jpg",
+    "code_no": 27,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 14,
+  "fields": {
+    "name": "GOBI - 65",
+    "price": "60.00",
+    "category": 5,
+    "image": "uploads/product/gobi65.jpg",
+    "code_no": 28,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 15,
+  "fields": {
+    "name": "MUSHROOM - 65",
+    "price": "80.00",
+    "category": 5,
+    "image": "uploads/product/mushroom65.jpg",
+    "code_no": 100,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 16,
+  "fields": {
+    "name": "GOBI MANCHURIAN",
+    "price": "70.00",
+    "category": 5,
+    "image": "uploads/product/gobi-manchurian.jpg",
+    "code_no": 27,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 17,
+  "fields": {
+    "name": "PANNER MANCHURIAN",
+    "price": "85.00",
+    "category": 5,
+    "image": "uploads/product/Panner_Manchurian.jpg",
+    "code_no": 63,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 18,
+  "fields": {
+    "name": "CHILLY PANNER",
+    "price": "85.00",
+    "category": 5,
+    "image": "uploads/product/chilly-panner.jpg",
+    "code_no": 64,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 19,
+  "fields": {
+    "name": "MUSHROOM MANCHURIAN",
+    "price": "80.00",
+    "category": 5,
+    "image": "uploads/product/mushroom-manchurian.jpg",
+    "code_no": 80,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 20,
+  "fields": {
+    "name": "SAMOSA",
+    "price": "15.00",
+    "category": 5,
+    "image": "uploads/product/samosa.jpg",
+    "code_no": 34,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 21,
+  "fields": {
+    "name": "FRENCH FRIES",
+    "price": "89.00",
+    "category": 5,
+    "image": "uploads/product/french-fries.jpg",
+    "code_no": 50,
+    "is_sale": true,
+    "sub_category": "VEG SIDE DISH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 22,
+  "fields": {
+    "name": "EGG PODI MASS",
+    "price": "30.00",
+    "category": 1,
+    "image": "uploads/product/Egg_Podi_Mass.jpg",
+    "code_no": 62,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 23,
+  "fields": {
+    "name": "EGG FRIED RICE",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Egg_Fried_Rice.jpg",
+    "code_no": 22,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 24,
+  "fields": {
+    "name": "EGG NOODLES",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Egg_Noodles.jpg",
+    "code_no": 23,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 25,
+  "fields": {
+    "name": "CHICKEN FRIED RICE",
+    "price": "100.00",
+    "category": 1,
+    "image": "uploads/product/Chicken_Fried_Rice.jpg",
+    "code_no": 24,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 26,
+  "fields": {
+    "name": "CHICKEN NOODLES",
+    "price": "100.00",
+    "category": 1,
+    "image": "uploads/product/Chicken_Noodles.jpg",
+    "code_no": 25,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 27,
+  "fields": {
+    "name": "CHICKEN - 65",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Chicken_65.jpg",
+    "code_no": 30,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 28,
+  "fields": {
+    "name": "CHILLY CHICKEN",
+    "price": "90.00",
+    "category": 1,
+    "image": "uploads/product/Chilly_Chicken.jpg",
+    "code_no": 31,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 29,
+  "fields": {
+    "name": "CHICKEN MANCHURIAN",
+    "price": "100.00",
+    "category": 1,
+    "image": "uploads/product/Chicken_Munchurian.jpg",
+    "code_no": 32,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 30,
+  "fields": {
+    "name": "EGG BIRIYANI",
+    "price": "90.00",
+    "category": 2,
+    "image": "uploads/product/Egg_Biryani.jpg",
+    "code_no": 55,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 31,
+  "fields": {
+    "name": "CHICKEN BIRIYANI",
+    "price": "100.00",
+    "category": 2,
+    "image": "uploads/product/Chicken_Biryani.jpg",
+    "code_no": 56,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 32,
+  "fields": {
+    "name": "CHICKEN 65 BIRIYANI",
+    "price": "115.00",
+    "category": 2,
+    "image": "uploads/product/Chicken_65_Biryani.jpg",
+    "code_no": 57,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 33,
+  "fields": {
+    "name": "CHICKEN SCHEZWAN FRIED RICE",
+    "price": "110.00",
+    "category": 1,
+    "image": "uploads/product/Chicken_Schezwan_Fried_Rice.jpg",
+    "code_no": 58,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 34,
+  "fields": {
+    "name": "CHICKEN SCHEZWAN NOODLES",
+    "price": "110.00",
+    "category": 1,
+    "image": "uploads/product/Chicken_Schezwan_Noodles.jpg",
+    "code_no": 60,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 35,
+  "fields": {
+    "name": "NON VEG MEALS",
+    "price": "80.00",
+    "category": 2,
+    "image": "uploads/product/Non-Veg_Meals.jpg",
+    "code_no": 61,
+    "is_sale": true,
+    "sub_category": "NON VEG"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 36,
+  "fields": {
+    "name": "CAVIN'S MILKSHAKE",
+    "price": "40.00",
+    "category": 3,
+    "image": "uploads/product/cavins-milkshake.jpg",
+    "code_no": 36,
+    "is_sale": true,
+    "sub_category": "MILKSHAKE & SPECIAL"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 37,
+  "fields": {
+    "name": "LEMON JUICE",
+    "price": "15.00",
+    "category": 3,
+    "image": "uploads/product/lemon.jpg",
+    "code_no": 38,
+    "is_sale": true,
+    "sub_category": "FRESH JUICE"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 38,
+  "fields": {
+    "name": "ROSE MILK",
+    "price": "20.00",
+    "category": 3,
+    "image": "uploads/product/rose-milk.jpg",
+    "code_no": 67,
+    "is_sale": true,
+    "sub_category": "MILKSHAKE & SPECIAL"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 39,
+  "fields": {
+    "name": "BADAM MILK",
+    "price": "20.00",
+    "category": 3,
+    "image": "uploads/product/badam.jpg",
+    "code_no": 68,
+    "is_sale": true,
+    "sub_category": "MILKSHAKE & SPECIAL"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 40,
+  "fields": {
+    "name": "CHAPPATHI",
+    "price": "40.00",
+    "category": 2,
+    "image": "uploads/product/Chapathi.jpg",
+    "code_no": 9,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 41,
+  "fields": {
+    "name": "PAROTTA",
+    "price": "45.00",
+    "category": 2,
+    "image": "uploads/product/Parotta.jpg",
+    "code_no": 19,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 42,
+  "fields": {
+    "name": "CHILLY PAROTTA",
+    "price": "80.00",
+    "category": 2,
+    "image": "uploads/product/Chilly_Parotta.jpg",
+    "code_no": 108,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 43,
+  "fields": {
+    "name": "VEG BIRIYANI",
+    "price": "12.00",
+    "category": 2,
+    "image": "uploads/product/Veg_Biryani.jpg",
+    "code_no": 12,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 44,
+  "fields": {
+    "name": "MUSHROOM BIRIYANI",
+    "price": "80.00",
+    "category": 2,
+    "image": "uploads/product/Mushroom_Biryani.jpg",
+    "code_no": 106,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 45,
+  "fields": {
+    "name": "PANNER BIRIYANI",
+    "price": "80.00",
+    "category": 2,
+    "image": "uploads/product/Paneer_Biryani.jpg",
+    "code_no": 107,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 46,
+  "fields": {
+    "name": "VEG MEALS",
+    "price": "80.00",
+    "category": 2,
+    "image": "uploads/product/Veg_Meals.jpg",
+    "code_no": 13,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 47,
+  "fields": {
+    "name": "SPECIAL RICE",
+    "price": "40.00",
+    "category": 2,
+    "image": "uploads/product/Variety_Rice.jpg",
+    "code_no": 14,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 48,
+  "fields": {
+    "name": "SAMBAR RICE",
+    "price": "40.00",
+    "category": 2,
+    "image": "uploads/product/Sambar_Rice.jpg",
+    "code_no": 40,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+},
+{
+  "model": "base.product",
+  "pk": 49,
+  "fields": {
+    "name": "CURD RICE",
+    "price": "40.00",
+    "category": 2,
+    "image": "uploads/product/Curd_Rice.jpg",
+    "code_no": 91,
+    "is_sale": true,
+    "sub_category": "VEG LUNCH"
+  }
+}
+]

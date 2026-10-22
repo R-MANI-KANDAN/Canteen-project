@@ -11,3 +11,7 @@ python manage.py collectstatic --no-input
 
 # Apply database migrations
 python manage.py migrate
+
+# Seed initial menu categories and products if database is empty
+python manage.py seed_menu
+
